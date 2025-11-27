@@ -1,5 +1,9 @@
 import { handleOptions, jsonResponse } from '@cc-wf-studio-connectors/shared';
-import { handleSlackCallback, handleSlackPoll } from '@cc-wf-studio-connectors/slack';
+import {
+	handleSlackCallback,
+	handleSlackExchange,
+	handleSlackPoll,
+} from '@cc-wf-studio-connectors/slack';
 import type { Env } from './env.js';
 
 /**
@@ -40,6 +44,17 @@ const routes: Route[] = [
 				return handleOptions();
 			}
 			return handleSlackPoll(request, env);
+		},
+	},
+	// Slack token exchange
+	{
+		pattern: /^\/slack\/exchange\/?$/,
+		methods: ['POST', 'OPTIONS'],
+		handler: async (request, env) => {
+			if (request.method === 'OPTIONS') {
+				return handleOptions();
+			}
+			return handleSlackExchange(request, env);
 		},
 	},
 	// Discord OAuth callback (future)

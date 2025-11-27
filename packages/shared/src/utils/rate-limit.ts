@@ -7,6 +7,7 @@ const RATE_LIMIT_WINDOW_SECONDS = 60;
 export const RATE_LIMITS = {
 	callback: 10, // 10 requests per minute per IP
 	poll: 30, // 30 requests per minute per IP (polling every 2s)
+	exchange: 10, // 10 requests per minute per IP
 } as const;
 
 export type RateLimitEndpoint = keyof typeof RATE_LIMITS;

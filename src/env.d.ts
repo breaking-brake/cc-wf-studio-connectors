@@ -8,4 +8,8 @@ export interface Env {
 	RATE_LIMIT: KVNamespace;
 	/** Environment identifier */
 	ENVIRONMENT: string;
+	/** Slack OAuth Client ID */
+	SLACK_CLIENT_ID: string;
+	/** Slack OAuth Client Secret */
+	SLACK_CLIENT_SECRET: string;
 }
