@@ -17,6 +17,10 @@
 		"format": "biome format --write .",
 		"check": "biome check ."
 	},
+	"dependencies": {
+		"@cc-wf-studio-connectors/shared": "workspace:*",
+		"@cc-wf-studio-connectors/slack": "workspace:*"
+	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.3.7",
 		"@cloudflare/workers-types": "^4.20241127.0",

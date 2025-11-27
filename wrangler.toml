@@ -20,11 +20,11 @@ ENVIRONMENT = "production"
 
 [[kv_namespaces]]
 binding = "OAUTH_SESSIONS"
-id = "REPLACE_WITH_OAUTH_SESSIONS_NAMESPACE_ID"
+id = "feb914af542b4dea9736a4cb5ea103ba"
 
 [[kv_namespaces]]
 binding = "RATE_LIMIT"
-id = "REPLACE_WITH_RATE_LIMIT_NAMESPACE_ID"
+id = "b2fd79a21ba84acbbcc1ecdd12c3d968"
 
 # Custom domain configuration (optional)
 # Uncomment and configure when you have a custom domain set up

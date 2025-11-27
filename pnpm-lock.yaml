@@ -7,6 +7,13 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@cc-wf-studio-connectors/shared':
+        specifier: workspace:*
+        version: link:packages/shared
+      '@cc-wf-studio-connectors/slack':
+        specifier: workspace:*
+        version: link:packages/slack
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.3.7
