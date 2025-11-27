@@ -1,0 +1,38 @@
+# cc-wf-studio-connectors
+# OAuth authentication server for cc-wf-studio (Slack/Discord integration)
+
+name = "cc-wf-studio-connectors"
+main = "src/index.ts"
+compatibility_date = "2024-11-01"
+
+# Node.js compatibility for certain APIs
+compatibility_flags = ["nodejs_compat"]
+
+# Environment variables
+[vars]
+ENVIRONMENT = "production"
+
+# KV Namespace bindings
+# Note: You need to create these namespaces first with:
+#   wrangler kv:namespace create "OAUTH_SESSIONS"
+#   wrangler kv:namespace create "RATE_LIMIT"
+# Then update the IDs below with the actual namespace IDs
+
+[[kv_namespaces]]
+binding = "OAUTH_SESSIONS"
+id = "REPLACE_WITH_OAUTH_SESSIONS_NAMESPACE_ID"
+
+[[kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "REPLACE_WITH_RATE_LIMIT_NAMESPACE_ID"
+
+# Custom domain configuration (optional)
+# Uncomment and configure when you have a custom domain set up
+# routes = [
+#   { pattern = "oauth.your-domain.com/*", zone_name = "your-domain.com" }
+# ]
+
+# Development settings
+[dev]
+port = 8787
+local_protocol = "http"

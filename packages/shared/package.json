@@ -1,0 +1,31 @@
+{
+	"name": "@cc-wf-studio-connectors/shared",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"types": "./dist/index.d.ts"
+		},
+		"./kv": {
+			"import": "./dist/kv/index.js",
+			"types": "./dist/kv/index.d.ts"
+		},
+		"./utils": {
+			"import": "./dist/utils/index.js",
+			"types": "./dist/utils/index.d.ts"
+		}
+	},
+	"scripts": {
+		"build": "tsc",
+		"lint": "biome lint src/",
+		"check": "biome check src/"
+	},
+	"devDependencies": {
+		"@cloudflare/workers-types": "^4.20241127.0",
+		"typescript": "^5.3.3"
+	}
+}
