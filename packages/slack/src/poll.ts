@@ -3,9 +3,6 @@ import {
 	getClientIp,
 	incrementRateLimit,
 	jsonResponse,
-	type PollResponse,
-	retrieveAndDeleteOAuthSession,
-	validateSessionId,
 	withCors,
 } from '@cc-wf-studio-connectors/shared';
 
@@ -15,6 +12,37 @@ import {
 export interface PollEnv {
 	OAUTH_SESSIONS: KVNamespace;
 	RATE_LIMIT: KVNamespace;
+}
+
+/** Regex for validating session_id (64 character hex string) */
+const SESSION_ID_REGEX = /^[a-f0-9]{64}$/;
+
+/**
+ * Validate session_id format
+ *
+ * @param sessionId - Session ID to validate
+ * @returns true if valid 64-character hex string
+ */
+function isValidSessionId(sessionId: unknown): sessionId is string {
+	return typeof sessionId === 'string' && SESSION_ID_REGEX.test(sessionId);
+}
+
+/**
+ * Session data stored in KV
+ */
+interface SessionData {
+	status: 'pending' | 'completed';
+	created_at: number;
+	code?: string;
+}
+
+/**
+ * Poll response type
+ */
+interface PollResponse {
+	status: 'success' | 'pending' | 'expired';
+	code?: string;
+	message?: string;
 }
 
 /**
@@ -36,7 +64,7 @@ export async function handleSlackPoll(request: Request, env: PollEnv): Promise<R
 	const sessionId = url.searchParams.get('session');
 
 	// Validate session ID
-	if (!validateSessionId(sessionId)) {
+	if (!isValidSessionId(sessionId)) {
 		const response: PollResponse = {
 			status: 'expired',
 			message: 'Invalid session ID',
@@ -59,11 +87,33 @@ export async function handleSlackPoll(request: Request, env: PollEnv): Promise<R
 	await incrementRateLimit(env.RATE_LIMIT, clientIp, 'poll');
 
 	// Try to retrieve the session
-	try {
-		const session = await retrieveAndDeleteOAuthSession(env.OAUTH_SESSIONS, 'slack', sessionId);
+	const kvKey = `slack_session:${sessionId}`;
 
-		if (session) {
-			// Session found - return the code
+	try {
+		const session = await env.OAUTH_SESSIONS.get<SessionData>(kvKey, 'json');
+
+		if (!session) {
+			// Session not found - expired or never existed
+			const response: PollResponse = {
+				status: 'expired',
+				message: 'Session not found or expired',
+			};
+			return withCors(jsonResponse(response, 410));
+		}
+
+		if (session.status === 'pending') {
+			// Session exists but OAuth not completed yet
+			const response: PollResponse = {
+				status: 'pending',
+				message: 'Authorization not completed yet',
+			};
+			return withCors(jsonResponse(response, 404));
+		}
+
+		if (session.status === 'completed' && session.code) {
+			// Session completed - return the code and delete from KV (one-time use)
+			await env.OAUTH_SESSIONS.delete(kvKey);
+
 			const response: PollResponse = {
 				status: 'success',
 				code: session.code,
@@ -71,12 +121,12 @@ export async function handleSlackPoll(request: Request, env: PollEnv): Promise<R
 			return withCors(jsonResponse(response, 200));
 		}
 
-		// Session not found - either not completed yet or expired
+		// Unexpected state
 		const response: PollResponse = {
-			status: 'pending',
-			message: 'Authorization not completed yet',
+			status: 'expired',
+			message: 'Invalid session state',
 		};
-		return withCors(jsonResponse(response, 404));
+		return withCors(jsonResponse(response, 500));
 	} catch (err) {
 		console.error('Failed to retrieve OAuth session:', err);
 		const response: PollResponse = {

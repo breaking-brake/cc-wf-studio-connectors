@@ -2,6 +2,7 @@ import { handleOptions, jsonResponse } from '@cc-wf-studio-connectors/shared';
 import {
 	handleSlackCallback,
 	handleSlackExchange,
+	handleSlackInit,
 	handleSlackPoll,
 } from '@cc-wf-studio-connectors/slack';
 import type { Env } from './env.js';
@@ -25,6 +26,17 @@ const routes: Route[] = [
 		methods: ['GET'],
 		handler: async () => {
 			return jsonResponse({ status: 'ok', timestamp: new Date().toISOString() });
+		},
+	},
+	// Slack session init
+	{
+		pattern: /^\/slack\/init\/?$/,
+		methods: ['POST', 'OPTIONS'],
+		handler: async (request, env) => {
+			if (request.method === 'OPTIONS') {
+				return handleOptions();
+			}
+			return handleSlackInit(request, env);
 		},
 	},
 	// Slack OAuth callback
