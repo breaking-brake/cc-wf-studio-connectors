@@ -1,29 +1,43 @@
 # cc-wf-studio-connectors
 
-OAuth authentication server for [cc-wf-studio](https://github.com/breaking-brake/cc-wf-studio) (Slack/Discord integration).
+OAuth authentication server for [cc-wf-studio](https://github.com/breaking-brake/cc-wf-studio) (Slack integration).
 
 ## Overview
 
-This Cloudflare Worker handles OAuth callbacks from Slack (and Discord in the future), storing authorization codes in KV for the VSCode extension to poll and retrieve.
+This Cloudflare Worker handles OAuth authentication for Slack, enabling the VSCode extension to securely connect to Slack workspaces.
 
-## Architecture
+## OAuth Flow
 
-```
-VSCode Extension
-  → session_id生成、ブラウザでSlack認証開始
-  → redirect_uri: https://oauth.your-domain.com/slack/callback
+```mermaid
+sequenceDiagram
+    participant VSCode
+    participant Browser
+    participant Worker as Cloudflare Worker
+    participant KV as Cloudflare KV
+    participant Slack
 
-Slack OAuth (Browser)
-  → 認証後、authorization codeをredirect_uriに送信
+    VSCode->>VSCode: Generate session_id
+    VSCode->>Worker: POST /slack/init (session_id)
+    Worker->>KV: Store session (status: pending)
+    Worker-->>VSCode: 200 OK
 
-Cloudflare Worker (/slack/callback)
-  → code と state を受け取り
-  → state=session_id で KV Storage に保存 (TTL: 5分)
-  → 確認画面 HTML を返す
+    VSCode->>Browser: Open Slack OAuth URL
+    Browser->>Slack: Show authorization page
+    Slack->>Browser: User authorizes
+    Browser->>Worker: GET /slack/callback (code, state)
+    Worker->>KV: Validate session & store code
+    Worker-->>Browser: Show success page
 
-VSCode Extension
-  → /slack/poll?session=xxx で code を取得
-  → code 取得後、oauth.v2.access 呼び出し（VSCode側で実行）
+    loop Polling
+        VSCode->>Worker: GET /slack/poll (session_id)
+        Worker->>KV: Get session
+        Worker-->>VSCode: code or pending
+    end
+
+    VSCode->>Worker: POST /slack/exchange (code)
+    Worker->>Slack: oauth.v2.access
+    Slack-->>Worker: access_token
+    Worker-->>VSCode: access_token
 ```
 
 ## Endpoints
@@ -31,10 +45,12 @@ VSCode Extension
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/health` | GET | Health check |
+| `/slack/init` | POST | Pre-register OAuth session |
 | `/slack/callback` | GET | Slack OAuth callback |
 | `/slack/poll` | GET | Poll for authorization code |
-| `/discord/callback` | GET | Discord OAuth callback (future) |
-| `/discord/poll` | GET | Discord poll (future) |
+| `/slack/exchange` | POST | Exchange code for access token |
+| `/privacy` | GET | Privacy Policy page |
+| `/terms` | GET | Terms of Service page |
 
 ## Development
 
@@ -51,7 +67,7 @@ VSCode Extension
 pnpm install
 
 # Build all packages
-pnpm turbo build
+pnpm build
 
 # Run locally
 pnpm dev
@@ -63,23 +79,36 @@ Before deploying, create the required KV namespaces:
 
 ```bash
 # Create namespaces
-wrangler kv:namespace create "OAUTH_SESSIONS"
-wrangler kv:namespace create "RATE_LIMIT"
+npx wrangler kv:namespace create "OAUTH_SESSIONS"
+npx wrangler kv:namespace create "RATE_LIMIT"
 ```
 
 Update `wrangler.toml` with the namespace IDs returned by the commands above.
 
+### Set Worker Secrets
+
+```bash
+# Slack App credentials
+npx wrangler secret put SLACK_CLIENT_ID
+npx wrangler secret put SLACK_CLIENT_SECRET
+```
+
 ### Deploy
 
 ```bash
-pnpm deploy
+npx wrangler deploy
 ```
 
 ## Configuration
 
-### GitHub Secrets
+### Worker Secrets
 
-For automated deployments, configure the following secrets in your GitHub repository:
+| Secret | Description |
+|--------|-------------|
+| `SLACK_CLIENT_ID` | Slack App Client ID |
+| `SLACK_CLIENT_SECRET` | Slack App Client Secret |
+
+### GitHub Secrets (for CI/CD)
 
 | Secret | Description |
 |--------|-------------|
@@ -88,13 +117,14 @@ For automated deployments, configure the following secrets in your GitHub reposi
 
 ### Custom Domain
 
-To use a custom domain, uncomment and configure the `routes` section in `wrangler.toml`:
+To use a custom domain, configure it in the Cloudflare Dashboard:
 
-```toml
-routes = [
-  { pattern = "oauth.your-domain.com/*", zone_name = "your-domain.com" }
-]
-```
+1. Go to Workers & Pages → your worker → Settings → Domains & Routes
+2. Add a custom domain (e.g., `oauth.your-domain.com`)
+
+## Related
+
+- [cc-wf-studio](https://github.com/breaking-brake/cc-wf-studio) - VSCode extension
 
 ## License
 

@@ -1,4 +1,10 @@
-import { handleOptions, jsonResponse } from '@cc-wf-studio-connectors/shared';
+import {
+	handleOptions,
+	htmlResponse,
+	jsonResponse,
+	privacyPolicyTemplate,
+	termsOfServiceTemplate,
+} from '@cc-wf-studio-connectors/shared';
 import {
 	handleSlackCallback,
 	handleSlackExchange,
@@ -26,6 +32,22 @@ const routes: Route[] = [
 		methods: ['GET'],
 		handler: async () => {
 			return jsonResponse({ status: 'ok', timestamp: new Date().toISOString() });
+		},
+	},
+	// Privacy Policy
+	{
+		pattern: /^\/privacy\/?$/,
+		methods: ['GET'],
+		handler: async () => {
+			return htmlResponse(privacyPolicyTemplate());
+		},
+	},
+	// Terms of Service
+	{
+		pattern: /^\/terms\/?$/,
+		methods: ['GET'],
+		handler: async () => {
+			return htmlResponse(termsOfServiceTemplate());
 		},
 	},
 	// Slack session init

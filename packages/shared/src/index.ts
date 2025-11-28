@@ -9,6 +9,9 @@ export {
 	storeOAuthSession,
 } from './kv/index.js';
 
+// Templates
+export { privacyPolicyTemplate, termsOfServiceTemplate } from './templates/index.js';
+
 // Utilities
 export {
 	checkRateLimit,

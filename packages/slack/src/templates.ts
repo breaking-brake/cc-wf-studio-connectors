@@ -41,7 +41,7 @@ const baseStyles = `
 `;
 
 /**
- * Success template - shown after successful OAuth callback
+ * Success template - shown after successful OAuth callback from VSCode
  */
 export function successTemplate(): string {
 	return `<!DOCTYPE html>
@@ -59,6 +59,31 @@ export function successTemplate(): string {
     <p>You can now close this window and return to VS Code.</p>
     <p style="margin-top: 16px; color: #999; font-size: 14px;">
       The extension will automatically complete the connection.
+    </p>
+  </div>
+</body>
+</html>`;
+}
+
+/**
+ * Install success template - shown after direct installation from Slack
+ */
+export function installSuccessTemplate(): string {
+	return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Installation Successful</title>
+  <style>${baseStyles}</style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">✅</div>
+    <h1>Installation Successful!</h1>
+    <p>Claude Code Workflow Studio has been installed to your workspace.</p>
+    <p style="margin-top: 16px; color: #999; font-size: 14px;">
+      To connect, open VS Code and use the extension to link your Slack workspace.
     </p>
   </div>
 </body>
