@@ -60,6 +60,11 @@ interface ExchangeResponse {
 		id: string;
 		name: string;
 	};
+	authed_user?: {
+		id: string;
+		access_token?: string;
+		scope?: string;
+	};
 }
 
 /**
@@ -197,6 +202,13 @@ export async function handleSlackExchange(request: Request, env: ExchangeEnv): P
 			scope: slackResponse.scope,
 			bot_user_id: slackResponse.bot_user_id,
 			team: slackResponse.team,
+			authed_user: slackResponse.authed_user
+				? {
+						id: slackResponse.authed_user.id,
+						access_token: slackResponse.authed_user.access_token,
+						scope: slackResponse.authed_user.scope,
+					}
+				: undefined,
 		};
 
 		return withCors(jsonResponse(response, 200));
