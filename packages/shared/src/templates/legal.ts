@@ -88,7 +88,7 @@ export function privacyPolicyTemplate(): string {
 <body>
   <div class="container">
     <h1>Privacy Policy</h1>
-    <p class="last-updated">Last Updated: November 27, 2025</p>
+    <p class="last-updated">Last Updated: November 29, 2025</p>
 
     <h2>1. Introduction</h2>
     <p>This Privacy Policy explains how the Slack integration feature of Claude Code Workflow Studio ("the Service") handles your information.</p>
@@ -98,7 +98,7 @@ export function privacyPolicyTemplate(): string {
     <ul>
       <li>Slack workspace ID</li>
       <li>Slack channel information (for selecting share destinations)</li>
-      <li>Slack Bot Token (stored encrypted)</li>
+      <li>Slack authentication tokens (Bot Token for posting, User Token for channel listing)</li>
     </ul>
 
     <h2>3. How We Use Information</h2>
@@ -158,7 +158,7 @@ export function termsOfServiceTemplate(): string {
 <body>
   <div class="container">
     <h1>Terms of Service</h1>
-    <p class="last-updated">Last Updated: November 27, 2025</p>
+    <p class="last-updated">Last Updated: November 29, 2025</p>
 
     <h2>1. Service Description</h2>
     <p>Claude Code Workflow Studio ("the Extension") is a VSCode extension for creating and managing Claude Code workflows. The Slack integration feature ("the Service") enables sharing and importing workflows via Slack as one of the Extension's features.</p>
