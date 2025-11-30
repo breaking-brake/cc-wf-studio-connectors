@@ -125,10 +125,12 @@ export function privacyPolicyTemplate(): string {
     </ul>
 
     <h2>7. Contact</h2>
-    <p>For questions about this policy, please contact:</p>
+    <p>For questions or inquiries about this policy:</p>
     <div class="contact">
-      <p><strong>Seiya Kobayashi</strong></p>
-      <p>Email: <a href="mailto:cc.wf.studio@gmail.com">cc.wf.studio@gmail.com</a></p>
+      <p><strong>General Questions</strong></p>
+      <p><a href="https://github.com/breaking-brake/cc-wf-studio/issues/new/choose" target="_blank">GitHub Issues</a></p>
+      <p style="margin-top: 12px;"><strong>Security Reports</strong></p>
+      <p><a href="https://github.com/breaking-brake/cc-wf-studio/security/advisories/new" target="_blank">Report a security vulnerability (private)</a></p>
     </div>
 
     <h2>8. Changes</h2>
@@ -192,10 +194,12 @@ export function termsOfServiceTemplate(): string {
     <p>These terms are governed by the laws of Japan.</p>
 
     <h2>7. Contact</h2>
-    <p>For questions about these terms, please contact:</p>
+    <p>For questions or inquiries about these terms:</p>
     <div class="contact">
-      <p><strong>Seiya Kobayashi</strong></p>
-      <p>Email: <a href="mailto:cc.wf.studio@gmail.com">cc.wf.studio@gmail.com</a></p>
+      <p><strong>General Questions</strong></p>
+      <p><a href="https://github.com/breaking-brake/cc-wf-studio/issues/new/choose" target="_blank">GitHub Issues</a></p>
+      <p style="margin-top: 12px;"><strong>Security Reports</strong></p>
+      <p><a href="https://github.com/breaking-brake/cc-wf-studio/security/advisories/new" target="_blank">Report a security vulnerability (private)</a></p>
     </div>
 
     <div class="footer">
